@@ -29,7 +29,7 @@
 1）主从节点之间采用（UDP？HTTP？）
 2）对外接口采用HTTP，以cgi为接口模块完成处理
 3）所有的通讯均采用JSON格式，主从之间格式如下
-{"cmd":"heart_info","host_name":"host_1","py_info"：{"cpu":"xx","mem":"xxx","HD":"xxx","nic0":"xxxx"},"vm":["instance01"：{"cpu":"xx","mem":"xxx","HD":"xxx","nic0":"xxxx"}]}
+{"cmd":"heart_info","host_name":"host_1","py_info"：{"cpu":"xx","mem":"xxx","HD":"xxx","nic0":"xxxx"},"vm":[{"instance01"：{"cpu":"xx","mem":"xxx","HD":"xxx","nic0":"xxxx"}}]}
 
 
 3，安装说明
