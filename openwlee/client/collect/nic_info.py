@@ -55,16 +55,17 @@ recv_bytes_delta, trans_bytes_delta
 
 这两个字段是在起始时间和终止时间之间流量的增量，用于做流量统计
 """
+#DELETE?
 class NicInfo():
     def __init__(self):
         self.last_stat_time = datetime.utcnow()
         self.last_stat_ifaces = nic_traffic_info_read()
         self.ifaces_stat = dict()
         
-    """
-    一个内部调用的方法，每次调用都会重新收集并统计下
-    新的统计信息将放到self.ifaces_stat中
-    """
+        """
+        一个内部调用的方法，每次调用都会重新收集并统计下
+        新的统计信息将放到self.ifaces_stat中
+        """
     def stat(self):
         self.ifaces_stat.clear()
         current_time = datetime.utcnow()

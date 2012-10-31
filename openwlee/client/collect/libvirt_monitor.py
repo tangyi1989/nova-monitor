@@ -8,12 +8,25 @@ EMAIL:tang_yi_1989@qq.com
 """
 
 import libvirt
-from xml.etree import ElementTree
 
+from xml.etree import ElementTree
+from openwlee import utils
+
+"""
+描述：本类只提供虚拟机的简单的统计信息，并不提供变化率等复杂的东西
+"""
 class DomainInfo():
     def __init__(self, dom, libvirt_con):
         self.__dom = dom
         self.__conn = libvirt_con
+        
+    @classmethod
+    def __all_properties(cls):
+        if not hasattr(cls, "_properties"):    
+            cls._properties = utils.methods_with_decorator(
+                                DomainInfo, 'property')
+            
+        return cls._properties 
         
     @staticmethod
     def get_xml_nodes(dom_xml, path):
@@ -34,9 +47,22 @@ class DomainInfo():
             nodes.append(devdst)
             
         return nodes
+
+    """
+    cpu_percent = (cputime1 - cputime2) / (time_delta * cores)
+    """    
+    @property
+    def overview(self):
+        (dom_run_state, dom_max_mem_kb, dom_memory_kb,
+         dom_nr_virt_cpu, dom_cpu_time) = self.__dom.info()
+         
+        return {'cputime' : dom_cpu_time, 
+                 'ncpus' : dom_nr_virt_cpu,
+                 'mem_kb_mx' : dom_max_mem_kb,
+                 'mem_kb' : dom_memory_kb }
     
     @property
-    def disk_io_stats(self):
+    def disk_stats(self):
         disk_io_stats = dict()
         
         dom_xml = self.__dom.XMLDesc(0)
@@ -67,30 +93,32 @@ class DomainInfo():
             
         return nic_stats
     
-    def to_dict(self):
-        pass
+    def get_dom_stat(self):
+        _dict = dict()
+        all_properties = self.__class__.__all_properties()
+        
+        for attr in all_properties:
+            _dict[attr] = getattr(self, attr)
+            
+        return _dict
 
 class LibvirtMonitor():
     def __init__(self):
         self._conn = libvirt.open("qemu:///system")
         
-    def list_domains(self):
-        doms = {}
+    def get_all_doms_stats(self):
+        dom_stats = {}
+        
         for id in self._conn.listDomainsID():
             dom = self._conn.lookupByID(id)
-            doms[dom.name()] = DomainInfo(dom, self._conn)
+            dom_stats[dom.name()] = DomainInfo(dom, self._conn).get_dom_stat()
             
-        return doms
+        return dom_stats
     
-
 def test():
     libvirt_monitor = LibvirtMonitor()
-    doms = libvirt_monitor.list_domains()
-    for (dom_name, dom) in doms.iteritems():
-        print dom_name
-        print dom.nic_stats
-        print dom.disk_io_stats
-        print dom.cpu_time
+    import pprint
+    pprint.pprint(libvirt_monitor.get_all_doms_stats())
         
 if __name__ == "__main__":
     test()
