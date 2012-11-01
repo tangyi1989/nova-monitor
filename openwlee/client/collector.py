@@ -81,9 +81,5 @@ class InstStatCollector(Collector):
 if __name__ == "__main__":
     import pprint
     inst_collector = InstStatCollector()
-    while True:
-        time.sleep(1)
-        stat = inst_collector.collect()['instance-000001a1']
-        utils.clear_screen()
-        pprint.pprint(stat)
+    pprint(inst_collector.collect())
         
