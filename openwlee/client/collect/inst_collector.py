@@ -4,23 +4,16 @@ from openwlee import utils
 
 import time
 from datetime import datetime
-from openwlee.client.collect.libvirt_monitor import LibvirtMonitor
-
-class Collector():
-    def __new__(cls):
-        pass
-    
-    def __init__(self):
-        pass
-    
-    def collect(self):
-        return {}
+from openwlee.client.collect.collector import Collector
+from openwlee.client.utils.libvirt_monitor import LibvirtMonitor
 
 class InstStatCollector(Collector):
     def __init__(self):
         self.libvirt_monitor = LibvirtMonitor()
         self.last_stat_time = utils.utc_now()
         self.last_inst_stat = self.libvirt_monitor.get_all_doms_stats()
+        
+        self.set_tag("vm_info")
     
     def collect(self):
         current_time = utils.utc_now()
@@ -76,10 +69,3 @@ class InstStatCollector(Collector):
         self.last_stat_time = current_time
         
         return inst_stats
-        
-
-if __name__ == "__main__":
-    import pprint
-    inst_collector = InstStatCollector()
-    pprint(inst_collector.collect())
-        
