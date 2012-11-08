@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>HCII Cloud Monitor</title>
+    
+    <link rel="stylesheet" type="text/css" href="ScriptAndStyle/pb/pb.css" />
+   
+    <link rel="stylesheet" type="text/css" href="ScriptAndStyle/serverStatus.css" />
+    
+    <script type="text/javascript" src="ScriptAndStyle/pb/ajaxConnect.js"></script>
+    <script type="text/javascript" src="ScriptAndStyle/pb/jquery.js"></script>
+    <script type="text/javascript" src="ScriptAndStyle/pb/autoSizeForScreen.js"></script>
+
+
+    <script type="text/javascript" src="ScriptAndStyle/serverStatus.js"></script>
+
+    
+    <script type="text/javascript" src="ScriptAndStyle/Gobal.js"></script>
+
+</head>
+<body>
+    <div id="SDContainer" class="autoScreen">
+        <div id="SDHeader" class="CWHeader">HCII-LAB Cloud Monitor</div>
+        <div id="SDMainBody">
+            <div id="SDLeft">
+                <div class="ServerOptions testBt">服务器监控</div>
+                <div class="ServerOptions">虚拟机监控</div>
+            </div>
+            <div id="SDRight">
+                <div class="ServerRegion">
+                    <div id="SDStatusRegion">
+                        <div class="servers">
+                            <div class="severStatus normalServer"></div>
+                            <div class="serverExplain">Server1 正常工作中</div>
+                        </div>
+                        <div class="servers">
+                            <div class="severStatus normalServer"></div>
+                            <div class="serverExplain">Server2 正常工作中</div>
+                        </div>
+                    </div>
+                    <div id="SDOperate">
+                        <div class="serverOperate SButton">停止该服务器</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
