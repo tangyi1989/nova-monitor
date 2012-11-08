@@ -1,0 +1,5 @@
+﻿脚本文件的作用的说明
+
+
+ajaxConnect.js			用于Ajax的通信文件 函数：AjaxConnect
+jquery.js				JQuery的库文件

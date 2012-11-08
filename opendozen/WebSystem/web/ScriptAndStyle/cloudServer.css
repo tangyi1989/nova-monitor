@@ -1,0 +1,81 @@
+﻿body {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+}
+
+.right {
+    position:absolute;
+    left:100px;
+    right:10px;
+    top:10px;
+    bottom:10px;
+    border:1px solid #b2b2b2;
+}
+
+.server {
+    position:relative;
+    width:128px;
+    height:150px;
+    float:left;
+    margin-left:10px;
+}
+.server .explain {
+    font-family:微软雅黑;
+    font-size:14px;
+    color:#0094ff;
+    text-align:center;
+    width:100%;
+}
+
+.normalServer {
+    background-image: url('../Resource/normalServer.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative;
+    width: 128px;
+    height: 128px;
+}
+.stopServer {
+    background-image: url('../Resource/stopServer.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative;
+    width: 128px;
+    height: 128px;
+}
+.exceptionServer {
+    background-image: url('../Resource/exceptionServer.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative;
+    width: 128px;
+    height: 128px;
+}
+
+.button {
+    border: 1px solid #b2b2b2;
+    font-size:14px;
+    font-family:微软雅黑;
+    padding: 3px;
+    color: #0094ff;
+    width:90px;
+    text-align:center;
+    cursor:pointer;
+    background-color:#564c50;
+    text-shadow:1px 1px 1px #ffffff;
+    border-radius:5px;
+}
+.button:hover {
+    background-color: #0c0b0d;
+}
+.responseRegion {
+    position: relative;
+    width: 95px;
+    min-height: 100px;
+    border:1px solid #b2b2b2;
+    margin-top:20px;
+    white-space:pre-line;
+}
