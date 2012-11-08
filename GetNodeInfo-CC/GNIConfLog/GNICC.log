@@ -1,0 +1,3 @@
+[2012-11-07 09:49:59,046]    DEBUG lds : ok
+[2012-11-07 09:49:59,046]     INFO lds : Sorry,your level is wrong.Please use "DEBUG","INFO","WARN","ERR" or "CRIT".
+[2012-11-07 09:49:59,046] CRITICAL hloo : err

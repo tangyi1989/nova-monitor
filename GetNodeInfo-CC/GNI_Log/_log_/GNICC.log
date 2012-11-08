@@ -1,0 +1,5 @@
+[2012-11-07 09:44:42,453]    DEBUG test : ok
+[2012-11-07 09:44:42,453]     INFO test : Sorry,your level is wrong.Please use "DEBUG","INFO","WARN","ERR" or "CRIT".
+[2012-11-07 09:44:59,578]    DEBUG test : ok
+[2012-11-07 09:44:59,578]     INFO test : Sorry,your level is wrong.Please use "DEBUG","INFO","WARN","ERR" or "CRIT".
+[2012-11-07 09:44:59,592] CRITICAL hloo : err
