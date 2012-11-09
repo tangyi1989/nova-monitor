@@ -1,2 +1,0 @@
-2012/10/25 19:14:54 [error] 7935#0: *157 open() "/home/lidesheng/MyWorks/nginx/web/default.aspx" failed (2: No such file or directory), client: 127.0.0.1, server: 218.192.168.43, request: "POST /default.aspx HTTP/1.0", host: "myhttpserver", referrer: "http://218.192.168.43:8080/"
-2012/10/25 19:22:22 [error] 7935#0: *184 open() "/home/lidesheng/MyWorks/nginx/web/default.aspx" failed (2: No such file or directory), client: 127.0.0.1, server: 218.192.168.43, request: "POST /default.aspx HTTP/1.0", host: "myhttpserver", referrer: "http://218.192.168.43:8080/"
