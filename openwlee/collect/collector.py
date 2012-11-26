@@ -5,20 +5,28 @@ from openwlee import utils
 import time
 from datetime import datetime
 
-#把此类写成单例模式或许会不错
 class Collector():
     def __new__(cls):
         pass
     
     def __init__(self):
-        self._tag = None
+        self._type = None
+        self.timestamp = None
         
-    def set_tag(self, tag):
-        self._tag = tag
+    def set_type(self, type):
+        self._type = type
+        
+    def get_timestamp(self):
+        if self.timestamp:
+            timestamp = self.timestamp
+        else:
+            timestamp = utils.utc_now()
+            
+        return timestamp
     
     def collect(self):
         return {}
-    
+
 class CollectorManager():
     def __init__(self):
         self._collectors = []
@@ -27,13 +35,21 @@ class CollectorManager():
         #Should check collector here
         self._collectors.append(collector)
     
-    def render_monitor_data(self):
-        monitor_data = dict()
+    """
+    Return data like this:
+    [{"type" : "xxx", "timestamp" : "xxx", "data" : "xxx"}, ...]
+    """
+    def collect_data(self):
+        data_list = []
         
         for collector in self._collectors:
-            tag = collector._tag
+            collect_dict = dict()
+            
             info = collector.collect()
+            collect_dict['data'] = info
+            collect_dict['timestamp'] = collector.get_timestamp()
+            collect_dict['type'] = collector._type
             
-            monitor_data[tag] = info
+            data_list.append(collect_dict) 
             
-        return monitor_data
+        return data_list

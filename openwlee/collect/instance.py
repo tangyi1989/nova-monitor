@@ -1,22 +1,50 @@
 #*_* coding=utf8 *_*
 
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from openwlee.collect.collector import Collector
 from openwlee.collect import utils
 from openwlee import utils as openwlee_utils
 
 from openwlee.peek.libvirt_monitor import LibvirtMonitor
 
-class InstanceStatCollector(Collector):
-    def __init__(self):
+"""
+Base of instance statistic collector.
+It would be used by many collector, this class is designed use singleton 
+pattern for performance reason. If it is used several times recently, it 
+would use cached data.
+"""
+@openwlee_utils.singleton
+class LibvirtInstanceStat():
+    def __init__(self, expired_seconds=5):
         self.libvirt_monitor = LibvirtMonitor()
         self.last_stat_time = openwlee_utils.utc_now()
         self.last_inst_stat = self.libvirt_monitor.get_all_doms_stats()
-        
-        self.set_tag("vm_perf_data")
+        self.expired_seconds = expired_seconds
+        self.cached_stats = None
     
+    """
+    Get vm_info(statistic and performance info).
+    If cached data is not expired, return cached data,
+    otherwise get the lasted data from libvirt and return.
+    """
     def stat_vm_info(self):
+        stat_date = self.last_stat_time
+        now_date = openwlee_utils.utc_now()
+        exipred_date = stat_date + timedelta(seconds = self.expired_seconds)
+        expired = now_date > exipred_date
+        
+        if self.cached_stats == None or expired:
+            self.cached_stats = self.stat_vm_info_from_libvirt()
+            stat_date = self.last_stat_time
+        
+        return (self.cached_stats, stat_date)
+    
+    """
+    Get instance statistic info from libvirtd then calculate 
+    performance info by passed time.
+    """
+    def stat_vm_info_from_libvirt(self):
         current_time = openwlee_utils.utc_now()
         vm_stats = self.libvirt_monitor.get_all_doms_stats()
         inst_stats = vm_stats.copy()
@@ -70,9 +98,26 @@ class InstanceStatCollector(Collector):
         self.last_stat_time = current_time
         
         return inst_stats
-    
+
+"""
+Collect instance performance data from libvirt, just performance data,
+not include statistic data.
+"""
+class InstancePerfCollector(Collector):
+    def __init__(self):
+        Collector.__init__(self)
+        self.libvirt_inst_stat = LibvirtInstanceStat()
+        self.set_type('vm_perf')
+        self.timestamp = None
+        
     def collect(self):
-        inst_stats = self.stat_vm_info()
+        inst_stats, stat_date = self.libvirt_inst_stat.stat_vm_info()
+        perf_data = self.get_perf_data(inst_stats)
+        self.timestamp = stat_date
+        
+        return perf_data
+        
+    def get_perf_data(self, inst_stats):
         vm_data = []
         
         #Convert dict to list and merge multiple items 

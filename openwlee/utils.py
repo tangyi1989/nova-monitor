@@ -3,6 +3,25 @@ import inspect
 
 import re
 
+"""
+Get utc datetime.
+"""
+def utc_now():
+    return datetime.utcnow()
+
+"""
+Convert nova instance name to integer id.
+"""
+def instance_name_to_id(name):
+    match = re.match('instance-([a-f0-9]+)', name)
+    if match != None:
+        return int(match.groups()[0])
+    else:
+        return None
+
+"""
+A method that find all functions with the given decorator_name
+"""
 def methods_with_decorator(cls, decorator_name):
     method_names = []
     sourcelines = inspect.getsourcelines(cls)[0]
@@ -16,12 +35,13 @@ def methods_with_decorator(cls, decorator_name):
             
     return method_names
 
-def utc_now():
-    return datetime.utcnow()
-
-def instance_name_to_id(name):
-    match = re.match('instance-([a-f0-9]+)', name)
-    if match != None:
-        return int(match.groups()[0])
-    else:
-        return None
+"""
+A decorator that makes a class singleton.
+"""
+def singleton(class_):
+  instances = {}
+  def getinstance(*args, **kwargs):
+    if class_ not in instances:
+        instances[class_] = class_(*args, **kwargs)
+    return instances[class_]
+  return getinstance
