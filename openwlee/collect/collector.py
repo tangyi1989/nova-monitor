@@ -23,17 +23,17 @@ class CollectorManager():
     def __init__(self):
         self._collectors = []
         
-    def append_collector(self, collector):
+    def append(self, collector):
         #Should check collector here
         self._collectors.append(collector)
     
-    def render_infos(self):
-        infos = dict()
+    def render_monitor_data(self):
+        monitor_data = dict()
         
         for collector in self._collectors:
             tag = collector._tag
             info = collector.collect()
             
-            infos[tag] = info
+            monitor_data[tag] = info
             
-        return infos
+        return monitor_data
