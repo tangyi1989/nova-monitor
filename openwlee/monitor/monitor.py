@@ -5,7 +5,7 @@ from openwlee import utils
 import time
 from datetime import datetime
 
-class Collector():
+class Monitor():
     def __new__(cls):
         pass
     
@@ -27,7 +27,7 @@ class Collector():
     def collect(self):
         return {}
 
-class CollectorManager():
+class MonitorManager():
     def __init__(self):
         self._collectors = []
         
