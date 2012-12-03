@@ -18,7 +18,7 @@ class InstancePerfMonitor(Monitor):
     def collect(self):
         inst_stats, stat_date = self.libvirt_util.get_all_instance_info()
         perf_data = self.get_perf_data(inst_stats)
-        self.timestamp = stat_date
+        self.monitor_date = stat_date
         
         return perf_data
         

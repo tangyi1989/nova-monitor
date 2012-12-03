@@ -28,7 +28,7 @@ FakeReporter fakes feed data to wleed instead, for test wleed.
 class FakeReporter(Reporter):
     def __init__(self, *args, **kargs):
         from openwlee.wleed import WleedManager
-        self.wleed_manager = WleeManger()
+        self.wleed_manager = WleedManager()
     
     def report(self, data):
         self.wleed_manager.handle_data(data)

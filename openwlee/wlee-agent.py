@@ -17,7 +17,7 @@ class WleeAgentManager:
         inst_perf_monitor = InstancePerfMonitor()
         
         self.hostname = utils.hostname()
-        self.reporter = DisplayReporter()
+        self.reporter = FakeReporter()
         self.monitor_manager = MonitorManager()
         self.monitor_manager.append(inst_perf_monitor)
     
@@ -34,8 +34,8 @@ class WleeAgentManager:
         if not data.has_key('hostname'):
             data['hostname'] = self.hostname
             
-        if not data.has_key('timestamp'):
-            data['timestamp'] = utils.utc_now()
+        if not data.has_key('datetime'):
+            data['datetime'] = utils.utc_now()
             
         report_data = utils.json_dumps(data)
         self.reporter.report(report_data)

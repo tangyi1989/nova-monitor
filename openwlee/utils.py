@@ -5,6 +5,9 @@ import socket
 import inspect
 import datetime
 
+ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+PERFECT_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+
 def methods_with_decorator(cls, decorator_name):
     """ A method that find all functions with the given decorator_name """
     
@@ -30,6 +33,8 @@ def singleton(class_):
     
     return getinstance
 
+def id_to_instance_time(id):
+    return 'instance-%08x' % id
 
 def instance_name_to_id(name):
     """ Convert nova instance name to integer id. """
@@ -44,6 +49,20 @@ def utc_now():
 
 def hostname():
     return socket.gethostname()
+
+def parse_strtime(timestr, fmt=PERFECT_TIME_FORMAT):
+    """Turn a formatted time back into a datetime."""
+    return datetime.datetime.strptime(timestr, fmt)
+
+def datetime_to_timestamp(date):
+    return int(date.strftime('%s'))
+    
+
+def strtime(at=None, fmt=PERFECT_TIME_FORMAT):
+    """Returns formatted utcnow."""
+    if not at:
+        at = utcnow()
+    return at.strftime(fmt)
 
 def to_primitive(value, convert_instances=False, level=0):
     """ Fine, I copied it from nova utils. 
@@ -64,7 +83,7 @@ def to_primitive(value, convert_instances=False, level=0):
                                     level=level)
             return o
         elif isinstance(value, datetime.datetime):
-            return str(value)
+            return strtime(value)
             
         return value
     

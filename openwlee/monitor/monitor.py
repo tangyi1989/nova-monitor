@@ -11,18 +11,18 @@ class Monitor():
     
     def __init__(self):
         self._type = None
-        self.timestamp = None
+        self.monitor_date = None
         
     def set_type(self, type):
         self._type = type
         
-    def get_timestamp(self):
-        if self.timestamp:
-            timestamp = self.timestamp
+    def get_monitor_date(self):
+        if self.monitor_date:
+            monitor_date = self.monitor_date
         else:
-            timestamp = utils.utc_now()
+            monitor_date = utils.utc_now()
             
-        return timestamp
+        return monitor_date
     
     def collect(self):
         return {}
@@ -37,7 +37,7 @@ class MonitorManager():
     
     """
     Return data like this:
-    [{"type" : "xxx", "timestamp" : "xxx", "data" : "xxx"}, ...]
+    [{"type" : "xxx", "datetime" : "xxx", "data" : "xxx"}, ...]
     """
     def collect_data(self):
         data_list = []
@@ -47,7 +47,7 @@ class MonitorManager():
             
             info = collector.collect()
             collect_dict['data'] = info
-            collect_dict['timestamp'] = collector.get_timestamp()
+            collect_dict['datetime'] = collector.get_monitor_date()
             collect_dict['type'] = collector._type
             
             data_list.append(collect_dict) 
