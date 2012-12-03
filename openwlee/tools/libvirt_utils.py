@@ -14,6 +14,7 @@ from xml.etree import ElementTree
 
 from openwlee.tools import utils
 from openwlee import utils as openwlee_utils
+from openwlee.openstack.common import timeutils
 
 """
 描述：本类只提供虚拟机的简单的统计信息，并不提供变化率等复杂的东西
@@ -127,7 +128,7 @@ would use cached data.
 class LibvirtUtil():
     def __init__(self, expired_seconds=5):
         self.libvirt_manager = LibvirtManager()
-        self.last_stat_time = openwlee_utils.utc_now()
+        self.last_stat_time = timeutils.utcnow()
         self.last_inst_stat = self.libvirt_manager.get_all_doms_stats()
         self.expired_seconds = expired_seconds
         self.cached_stats = None
@@ -139,7 +140,7 @@ class LibvirtUtil():
     """
     def get_all_instance_info(self):
         stat_date = self.last_stat_time
-        now_date = openwlee_utils.utc_now()
+        now_date = timeutils.utcnow()
         exipred_date = stat_date + timedelta(seconds = self.expired_seconds)
         expired = now_date > exipred_date
         
@@ -154,7 +155,7 @@ class LibvirtUtil():
     performance info by passed time.
     """
     def stat_vm_info_from_libvirt(self):
-        current_time = openwlee_utils.utc_now()
+        current_time = timeutils.utcnow()
         vm_stats = self.libvirt_manager.get_all_doms_stats()
         inst_stats = vm_stats.copy()
         

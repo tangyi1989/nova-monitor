@@ -5,6 +5,8 @@ import json
 from datetime import datetime
 
 from openwlee import utils
+from openwlee.openstack.common import timeutils
+from openwlee.openstack.common import jsonutils
 from openwlee.common.reporter import FakeReporter, DisplayReporter
 from openwlee.monitor.monitor import MonitorManager
 from openwlee.monitor.instance_monitor import InstancePerfMonitor
@@ -35,14 +37,17 @@ class WleeAgentManager:
             data['hostname'] = self.hostname
             
         if not data.has_key('datetime'):
-            data['datetime'] = utils.utc_now()
+            data['datetime'] = timeutils.utcnow()
             
-        report_data = utils.json_dumps(data)
+        report_data = jsonutils.dumps(data)
         self.reporter.report(report_data)
-    
+        
+    def start(self):
+        while True:
+            time.sleep(1)
+            self.report_monitor_data()
+            self.report_alive()
+            
 if __name__ == "__main__":
     agent = WleeAgentManager()
-    while True:
-        time.sleep(1)
-        agent.report_monitor_data()
-        agent.report_alive()
+    agent.start()

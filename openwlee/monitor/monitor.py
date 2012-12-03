@@ -4,6 +4,7 @@ from openwlee import utils
 
 import time
 from datetime import datetime
+from openwlee.openstack.common import timeutils
 
 class Monitor():
     def __new__(cls):
@@ -20,7 +21,7 @@ class Monitor():
         if self.monitor_date:
             monitor_date = self.monitor_date
         else:
-            monitor_date = utils.utc_now()
+            monitor_date = timeutils.utcnow()
             
         return monitor_date
     

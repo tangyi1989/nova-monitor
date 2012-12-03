@@ -1,6 +1,8 @@
 
 import pymongo
 from openwlee import utils
+from openwlee.openstack.common import jsonutils
+from openwlee.openstack.common import timeutils
 
 class MongoUtil():
     def __init__(self, *args, **kargs):
@@ -29,21 +31,22 @@ class WleeMongoBackend():
         conn = self.mongo_util.get_connection()
         return conn.wlee_db
      
-"""
-If I use MongoUtil directly, it would be result high degree of coupling.
-I would refactor these code anyway.
-"""
+
 class InstancePerfData():
+    """
+    If I use MongoUtil directly, it would be result high degree of coupling.
+    I would refactor these code anyway.
+    """
     def __init__(self):
         self.mongo_backend = WleeMongoBackend()
         self.mongo_db = self.mongo_backend.get_database()
     
     def save_instance_perf(self, inst_perf):
-        perf_recently = self.mongo_db.vm_perf_recently
+        perf_recently = self.mongo_db.instance_perf_recently
         perf_recently.insert(inst_perf)
     
     def get_most_recently_perf(self, instance_name, seconds = 60):
-        perf_recently = self.mongo_db.vm_perf_recently
+        perf_recently = self.mongo_db.instance_perf_recently
         
         max_timestamp_cursor = perf_recently.find({'name' : instance_name}).\
                     sort([('timestamp', pymongo.DESCENDING)]).limit(1)
@@ -75,11 +78,11 @@ class WleedManager():
         self.instance_perf_manager = InstancePerfData()
     
     def handle_data(self, data):
-        msg = utils.json_loads(data)
+        msg = jsonutils.loads(data)
         
         type = msg['type']
         data = msg['data']
-        datetime = utils.parse_strtime(msg['datetime'])
+        datetime = timeutils.parse_strtime(msg['datetime'])
         self.dispatch_message(type, data, datetime)
     
     def dispatch_message(self, type, data, datetime):
