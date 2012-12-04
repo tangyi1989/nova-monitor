@@ -1,4 +1,8 @@
 
+from openwlee.openstack.common import log as logging
+
+LOG = logging.getLogger(__name__)
+
 class WleeException(Exception):
     """Base Nova Exception
 
@@ -29,13 +33,22 @@ class WleeException(Exception):
                 # kwargs doesn't match a variable in the message
                 # log the issue and the kwargs
                 
-                # TODO release this code
-                #LOG.exception(_('Exception in string format operation'))
-                #for name, value in kwargs.iteritems():
-                #    LOG.error("%s: %s" % (name, value))
+                LOG.exception(_('Exception in string format operation'))
+                for name, value in kwargs.iteritems():
+                    LOG.error("%s: %s" % (name, value))
                 
                 # at least get the core message out if something happened
                 message = self.message
 
         super(WleeException, self).__init__(message)
+        
+class ConfigNotFound(WleeException):
+    message = _("Could not find config at %(path)s")
+    
+class PasteAppNotFound(WleeException):
+    message = _("Could not load paste app '%(name)s' from %(path)s")
+        
+
+        
+
 

@@ -1,8 +1,18 @@
-from eventlet import wsgi
-import eventlet
 
-def hello_world(env, start_response):
-    start_response('200 OK', [('Content-Type', 'text/plain')])
-    return ['Hello, World!\r\n']
+import sys
 
-wsgi.server(eventlet.listen(('', 8090)), hello_world)
+from openwlee import wsgi
+from openwlee import utils
+from openwlee import config
+from openwlee.openstack.common import log as logging
+from openwlee.openstack.common.wsgi import run_server as wsgi_run_server
+
+from openwlee.openstack.common.jsonutils import to_primitive
+
+if __name__ == "__main__":
+    config.parse_args(sys.argv)
+    logging.setup("openwlee")
+    loader = wsgi.Loader('/etc/openwlee/wlee-api.conf')
+    app = loader.load_app('wlee')
+    wsgi_run_server(app, 8888)
+    
