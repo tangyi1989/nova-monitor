@@ -1,4 +1,3 @@
-#*_* coding=utf8 *_*
 
 import time
 import json
@@ -11,10 +10,10 @@ from openwlee.common.reporter import FakeReporter, DisplayReporter
 from openwlee.monitor.monitor import MonitorManager
 from openwlee.monitor.instance_monitor import InstancePerfMonitor
 
-"""
-Agent : collect data from this node, and report it to server
-"""
 class WleeAgentManager:
+    """
+    Agent : collect data from this node, and report it to server
+    """
     def __init__(self):
         inst_perf_monitor = InstancePerfMonitor()
         
@@ -34,7 +33,7 @@ class WleeAgentManager:
         
     def report(self, data):
         if not data.has_key('hostname'):
-            data['hostname'] = self.hostname
+            data['host'] = self.hostname
             
         if not data.has_key('datetime'):
             data['datetime'] = timeutils.utcnow()

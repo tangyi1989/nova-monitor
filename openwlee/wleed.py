@@ -1,95 +1,43 @@
 
-import pymongo
 from openwlee import utils
+from openwlee.db import base as db_base
 from openwlee.openstack.common import jsonutils
 from openwlee.openstack.common import timeutils
 
-class MongoUtil():
-    def __init__(self, *args, **kargs):
-        pass
-                   
-    def get_connection(self):
-         return pymongo.Connection(host='localhost', port=27017)
-
-class WleeMongoBackend():
-    def __init__(self):
-        self.mongo_util = MongoUtil()
-        self.initiliaze_database()
-    
-    def initiliaze_database(self):
-        def create_col_if_not_exist(db, col_name, indexes=[], options=None):
-            if col_name not in db.collection_names():
-                db.create_collection(col_name, options=options)
-                coll = db[col_name]
-                for index in indexes:
-                    coll.ensure_index(index)
-    
-        db = self.get_database()
-        create_col_if_not_exist(db, 'instance_perf_recently', ['name', "timestamp"])
-        
-    def get_database(self):
-        conn = self.mongo_util.get_connection()
-        return conn.wlee_db
-     
-
-class InstancePerfData():
+class WleedDispatcher():
     """
-    If I use MongoUtil directly, it would be result high degree of coupling.
-    I would refactor these code anyway.
+    Wlee Dispatcher : dispatch message
     """
-    def __init__(self):
-        self.mongo_backend = WleeMongoBackend()
-        self.mongo_db = self.mongo_backend.get_database()
+    def __init__(self, manager):
+        self.manager = manager
+        self.db = manager.db
+        
+    def dispatch(self, host, type, data, datetime):
+        if type == "instance_perf":
+            self.handle_instance_perf_data(data, datetime)
     
-    def save_instance_perf(self, inst_perf):
-        perf_recently = self.mongo_db.instance_perf_recently
-        perf_recently.insert(inst_perf)
-    
-    def get_most_recently_perf(self, instance_name, seconds = 60):
-        perf_recently = self.mongo_db.instance_perf_recently
-        
-        max_timestamp_cursor = perf_recently.find({'name' : instance_name}).\
-                    sort([('timestamp', pymongo.DESCENDING)]).limit(1)
-        
-        max_timestamp_list = [i for i in max_timestamp_cursor]
-        if len(max_timestamp_list) == 0:
-            return []
-        
-        max_timestamp = max_timestamp_list[0]['timestamp'] + 1
-        min_timestamp = max_timestamp - seconds
-        
-        recently_perf_cursor = perf_recently.find({'name' : instance_name, 
-                'timestamp' : {"$lt" : max_timestamp, "$gt" : min_timestamp}})
-        recently_perf_list = [i for i in recently_perf_cursor]
-        
-        return recently_perf_list
-
-    
-    def handle_message(self, type, data, datetime):
-        inst_perf_list = data
+    def handle_instance_perf_data(self, inst_perf_list, datetime):
         for inst_perf in inst_perf_list:
-            timestamp = utils.datetime_to_timestamp(datetime)
-            inst_perf['timestamp'] = timestamp
-            
-            self.save_instance_perf(inst_perf)
-
-class WleedManager():
+            inst_perf['timestamp']= utils.datetime_to_timestamp(datetime)
+            self.db.save_instance_perf_data(inst_perf)
+        
+class WleedManager(db_base.Base):
+    """
+    Wlee Deamon : used to collect info from agent and saved to database.
+    """
     def __init__(self):
-        self.instance_perf_manager = InstancePerfData()
+        super(WleedManager, self).__init__()
+        self.receiver = None
+        self.dispatcher = WleedDispatcher(self)
     
     def handle_data(self, data):
         msg = jsonutils.loads(data)
         
+        host = msg['host']
         type = msg['type']
         data = msg['data']
         datetime = timeutils.parse_strtime(msg['datetime'])
-        self.dispatch_message(type, data, datetime)
+        self.dispatcher.dispatch(host, type, data, datetime)
     
-    def dispatch_message(self, type, data, datetime):
-        if type == "instance_perf":
-            self.instance_perf_manager.handle_message(type, data, datetime)
-        #do nothing else now.
-
-if __name__=="__main__":
-    inst_perf = InstancePerfData()
-    print inst_perf.get_most_recently_perf('instance-0000023a')
+    def start(self):
+        pass
