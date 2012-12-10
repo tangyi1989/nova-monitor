@@ -4,9 +4,9 @@ import json
 from datetime import datetime
 
 from openwlee import utils
+from openwlee import exchange
 from openwlee.openstack.common import timeutils
 from openwlee.openstack.common import jsonutils
-from openwlee.common.reporter import FakeReporter, DisplayReporter
 from openwlee.monitor.monitor import MonitorManager
 from openwlee.monitor.instance_monitor import InstancePerfMonitor
 
@@ -18,7 +18,7 @@ class WleeAgentManager:
         inst_perf_monitor = InstancePerfMonitor()
         
         self.hostname = utils.hostname()
-        self.reporter = FakeReporter()
+        self.reporter = exchange.Reporter()
         self.monitor_manager = MonitorManager()
         self.monitor_manager.append(inst_perf_monitor)
     
