@@ -11,7 +11,6 @@ CONF = cfg.CONF
 
 def methods_with_decorator(cls, decorator_name):
     """ A method that find all functions with the given decorator_name """
-    
     method_names = []
     sourcelines = inspect.getsourcelines(cls)[0]
     
@@ -26,7 +25,6 @@ def methods_with_decorator(cls, decorator_name):
 
 def singleton(class_):
     """ A decorator that makes a class singleton. """
-    
     instances = {}
     def getinstance(*args, **kwargs):
         if class_ not in instances:
@@ -34,6 +32,18 @@ def singleton(class_):
         return instances[class_]
     
     return getinstance
+
+def walk_class_hierarchy(clazz, encountered=None):
+    """Walk class hierarchy, yielding most derived classes first"""
+    if not encountered:
+        encountered = []
+    for subclass in clazz.__subclasses__():
+        if subclass not in encountered:
+            encountered.append(subclass)
+            # drill down to leaves first
+            for subsubclass in walk_class_hierarchy(subclass, encountered):
+                yield subsubclass
+            yield subclass
 
 def instance_id_to_time(id):
     return 'instance-%08x' % id
@@ -54,9 +64,7 @@ def hostname():
     return socket.gethostname()
 
 def debug(func):
-    """
-    A decorator used to debug a function
-    """
+    """ A decorator used to debug a function """
     def invoke_with_debug(*args, **kargs):
         
         print ""
@@ -72,7 +80,7 @@ def debug(func):
         
 
 class LazyPluggable(object):
-    """A pluggable backend loaded lazily based on some value."""
+    """ A pluggable backend loaded lazily based on some value. """
 
     def __init__(self, pivot, **backends):
         self.__backends = backends
