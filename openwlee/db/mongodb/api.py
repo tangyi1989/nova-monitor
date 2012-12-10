@@ -2,6 +2,7 @@
 import pymongo
 
 from openwlee import utils as openwlee_utils
+from openwlee.db.mongodb import utils
 from openwlee.db.mongodb.utils import ensure_collction, get_database
 
 INST_RECENTLY_PERF_SIZE = 1000 * 24 * 60 * 6
@@ -20,8 +21,8 @@ def save_instance_perf_data(perf_data):
     perf_recently = db.instance_perf_recently
     return perf_recently.insert(perf_data)
 
-@openwlee_utils.debug
-def get_instance_recently_perf(instance_name, seconds = 60):
+@utils.wrap_mongo_query_result
+def get_instance_recently_perf(instance_name, seconds):
     db = get_database()
     perf_recently = db.instance_perf_recently
     

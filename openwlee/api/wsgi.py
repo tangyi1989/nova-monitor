@@ -9,7 +9,6 @@ LOG = logging.getLogger('openwlee.api.wsgi')
 class FaultWrapper(wsgi.Middleware):
     """Calls down the middleware stack, making exceptions into faults."""
     
-    @utils.debug
     def __init__(self, app, conf, **local_conf):
         super(FaultWrapper, self).__init__(app)
 
@@ -97,7 +96,7 @@ class Fault(webob.exc.HTTPException):
         # 'code' is an attribute on the fault tag itself
         metadata = {'attributes': {fault_name: 'code'}}
 
-        xml_serializer = wsgi.XMLDictSerializer(metadata, XMLNS_V11)
+        xml_serializer = wsgi.XMLDictSerializer(metadata)
 
         content_type = req.best_match_content_type()
         serializer = {

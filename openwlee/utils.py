@@ -2,6 +2,7 @@ import re
 import json
 import socket
 import inspect
+import traceback
 
 from openwlee import exception
 from openwlee.openstack.common import cfg
@@ -71,7 +72,12 @@ def debug(func):
         print "Invoking Function : %s.%s" % (func.__module__, func.__name__) 
         print "With args : %s kargs : %s" % (to_primitive(args), 
                                              to_primitive(kargs))
-        ret = func(*args, **kargs)
+        try:
+            ret = func(*args, **kargs)
+        except Exception as e:
+            print "Caught exception : %s" % str(e)
+            print traceback.format_exc()
+            raise e
         print "Function returns : %s" % to_primitive(ret)
         print ""
         return ret

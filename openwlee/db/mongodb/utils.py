@@ -34,3 +34,12 @@ def ensure_collction(collection_name, db_name = 'wlee_db', indexes=None, options
     if indexes != None:
         coll.ensure_index(indexes)
 
+def wrap_mongo_query_result(query_func):
+    
+    def del_mongo_id_func(*arg, **kargs):
+        rows = query_func(*arg, **kargs)
+        for row in rows:
+            del row['_id']
+        return rows
+    
+    return del_mongo_id_func
