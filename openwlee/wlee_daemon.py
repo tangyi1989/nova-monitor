@@ -4,6 +4,9 @@ from openwlee import exchange
 from openwlee.db import base as db_base
 from openwlee.openstack.common import jsonutils
 from openwlee.openstack.common import timeutils
+from openwlee.openstack.common import log as logging
+
+LOG = logging.getLogger("openwlee.wlee_daemon")
 
 class EventDispatcher():
     """
@@ -28,19 +31,21 @@ class WleeDaemonManager(db_base.Base):
     """
     def __init__(self):
         super(WleeDaemonManager, self).__init__()
-        self.receiver = exchange.Receiver()
+        self.receiver = exchange.Receiver(self.handle_data)
         self.dispatcher = EventDispatcher(self)
     
     def handle_data(self, data):
-        msg = jsonutils.loads(data)
+        try:
+            msg = jsonutils.loads(data)
+            host = msg['host']
+            type = msg['type']
+            data_body = msg['data']
+            datetime = timeutils.parse_strtime(msg['datetime'])
+        except ValueError as e:
+            LOG.error("Parse agent data error. Data : %s" % data)
+            return
         
-        host = msg['host']
-        type = msg['type']
-        data = msg['data']
-        datetime = timeutils.parse_strtime(msg['datetime'])
-        self.dispatcher.dispatch(host, type, data, datetime)
+        self.dispatcher.dispatch(host, type, data_body, datetime)
     
     def start(self):
-        while True:
-            data = self.receiver.receive()
-            self.handle_data(data)
+        self.receiver.start_event_loop()

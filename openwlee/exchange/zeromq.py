@@ -13,14 +13,22 @@ WARNING : THIS CAANOT BE USED NOW! THIS IS BAD!
 
 class ZeromqReceiver(base.Receiver):
     def __init__(self, *args, **kargs):
+        super(ZeromqReceiver, self).__init__(*args, **kargs)
+        
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
-        LOG.info("ZeromqReceiver would connect to tcp://*:9779")
-        self.socket.connect("tcp://192.168.2.31:9779")
+    
+    def start_event_loop(self):
+        LOG.info("ZeromqReceiver would connect to tcp://localhost:9779")
+        
+        self.socket.connect("tcp://localhost:9779")
         self.socket.setsockopt(zmq.SUBSCRIBE, '')  
+        while True:
+            data = self.receive()
+            self.handle_receive_data(data)
     
     def receive(self):
-        LOG.info("ZeromqReceiver receiving data...")
+        
         topic, msg = self.socket.recv_pyobj()
         LOG.info("ZeromqReceiver received topic : %s , message %s" %\
                   (topic, msg))
