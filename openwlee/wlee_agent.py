@@ -5,10 +5,13 @@ from datetime import datetime
 
 from openwlee import utils
 from openwlee import exchange
+from openwlee.openstack.common import log as logging
 from openwlee.openstack.common import timeutils
 from openwlee.openstack.common import jsonutils
 from openwlee.monitor.monitor import MonitorManager
 from openwlee.monitor.instance_monitor import InstancePerfMonitor
+
+LOG = logging.getLogger('openwlee.wlee_agent')
 
 class WleeAgentManager:
     """
@@ -28,6 +31,7 @@ class WleeAgentManager:
             self.report(data)
     
     def report_alive(self):
+        LOG.info("Agent report heartbeat alive to daemon.")
         heartbeat = dict(type='heartbeat', data = {})
         self.report(heartbeat)
         
@@ -43,10 +47,7 @@ class WleeAgentManager:
         
     def start(self):
         while True:
-            time.sleep(1)
             self.report_monitor_data()
             self.report_alive()
+            time.sleep(1)
             
-if __name__ == "__main__":
-    agent = WleeAgentManager()
-    agent.start()

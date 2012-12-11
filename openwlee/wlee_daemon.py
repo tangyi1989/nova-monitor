@@ -1,12 +1,13 @@
 
 from openwlee import utils
+from openwlee import exchange
 from openwlee.db import base as db_base
 from openwlee.openstack.common import jsonutils
 from openwlee.openstack.common import timeutils
 
-class WleedDispatcher():
+class EventDispatcher():
     """
-    Wlee Dispatcher : dispatch message
+    Event Dispatcher : dispatch message
     """
     def __init__(self, manager):
         self.manager = manager
@@ -21,14 +22,14 @@ class WleedDispatcher():
             inst_perf['timestamp']= utils.datetime_to_timestamp(datetime)
             self.db.save_instance_perf_data(inst_perf)
         
-class WleedManager(db_base.Base):
+class WleeDaemonManager(db_base.Base):
     """
     Wlee Deamon : used to collect info from agent and saved to database.
     """
     def __init__(self):
-        super(WleedManager, self).__init__()
-        self.receiver = None
-        self.dispatcher = WleedDispatcher(self)
+        super(WleeDaemonManager, self).__init__()
+        self.receiver = exchange.Receiver()
+        self.dispatcher = EventDispatcher(self)
     
     def handle_data(self, data):
         msg = jsonutils.loads(data)
@@ -40,4 +41,6 @@ class WleedManager(db_base.Base):
         self.dispatcher.dispatch(host, type, data, datetime)
     
     def start(self):
-        pass
+        while True:
+            data = self.receiver.receive()
+            self.handle_data(data)

@@ -13,4 +13,8 @@ setuptools.setup(
     author_email="101859673@qq.com, tang_yi_1989@qq.com",
     description="Monitor virtual machine for openstack",
     packages=["openwlee"],
+    scripts=['bin/wlee-api', 
+             'bin/wlee-agent', 
+             'bin/wlee-daemon',
+            ],
 )
