@@ -3,6 +3,7 @@ import eventlet
 import datetime
 
 from openwlee import task
+from openwlee import exception
 from openwlee import exchange
 from openwlee.openstack.common import log as logging
 from openwlee.openstack.common import timeutils
@@ -11,7 +12,7 @@ from openwlee.openstack.common import cfg
 LOG = logging.getLogger('openwlee.wlee_agent')
 
 class WleeAgentManager:
-    """ Wlee Agent :  """
+    """ Wlee Agent : collect data from agent host and send to wlee daemon."""
     def __init__(self):
         self.reporter = exchange.Reporter()
         self.hostname = cfg.CONF.host
