@@ -14,8 +14,8 @@ CONF.register_opts(db_opts)
 IMPL = utils.LazyPluggable('db_backend',
                            mongodb='openwlee.db.mongodb.api')
 
-def update_agent_status():
-    return IMPL.update_agent_status()
+def update_agent_status(host, datetime):
+    return IMPL.update_agent_status(host, datetime)
 
 def save_instance_perf_data(perf_data):
     return IMPL.save_instance_perf_data(perf_data)

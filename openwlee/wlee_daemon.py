@@ -19,6 +19,11 @@ class EventDispatcher():
     def dispatch(self, host, type, data, datetime):
         if type == "instance_perf":
             self.handle_instance_perf_data(data, datetime)
+        elif type == "heartbeat":
+            self.handle_heartbeat(host, datetime)
+    
+    def handle_heartbeat(self, host, datetime):
+        self.db.update_agent_status(host, datetime)
     
     def handle_instance_perf_data(self, inst_perf_list, datetime):
         for inst_perf in inst_perf_list:

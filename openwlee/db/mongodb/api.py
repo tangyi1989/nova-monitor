@@ -10,12 +10,13 @@ ensure_collction('instance_recently_perf', db_name = 'wlee_db',
                  indexes = [('name', pymongo.ASCENDING), ('timestamp', pymongo.DESCENDING)], 
                  options = {"capped" : True, "size" : INST_RECENTLY_PERF_SIZE, 
                             "max" : INST_RECENTLY_PERF_SIZE})
+ensure_collction('agent_status', db_name = 'wlee_db')
 
-@openwlee_utils.debug
-def update_agent_status():
-    pass
-
-@openwlee_utils.debug
+def update_agent_status(host, datetime):
+    db = get_database()
+    return db.agent_status.update({'host' : host}, 
+                                  {'$set' : {'last_updated_at' : datetime}}, True)
+    
 def save_instance_perf_data(perf_data):
     db = get_database()
     perf_recently = db.instance_perf_recently

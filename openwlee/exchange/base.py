@@ -26,7 +26,7 @@ class Receiver(object):
         try:
             self.receive_handler(data)
         except Exception as e:
-            LOG.error("Caught an exception when handle receive reporter's"
+            LOG.error("Caught an exception when handle receive reporter's "
                       "report data. Exception : %s" % str(e))
     
     def start_event_loop(self):
