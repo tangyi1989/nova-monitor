@@ -14,4 +14,4 @@ if __name__ == "__main__":
     
     agent = WleeAgentManager()
     LOG.info("Start wlee agent event loop.")
-    agent.start()
+    agent.run()

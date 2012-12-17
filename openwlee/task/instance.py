@@ -1,26 +1,10 @@
-#*_* coding=utf8 *_*
 
-
-from openwlee.monitor.monitor import Monitor
+from openwlee.task import base
 from openwlee.tools.libvirt_utils import LibvirtUtil
 
-"""
-Collect instance performance data from libvirt, just performance data,
-not include statistic data.
-"""
-class InstancePerfMonitor(Monitor):
-    def __init__(self):
-        Monitor.__init__(self)
+class InstancePerformanceTask(base.Task):
+    def initialize(self):
         self.libvirt_util = LibvirtUtil()
-        self.set_type('instance_perf')
-        self.timestamp = None
-        
-    def collect(self):
-        inst_stats, stat_date = self.libvirt_util.get_all_instance_info()
-        perf_data = self.get_perf_data(inst_stats)
-        self.monitor_date = stat_date
-        
-        return perf_data
         
     def get_perf_data(self, inst_stats):
         instance_data_list = []
@@ -51,3 +35,8 @@ class InstancePerfMonitor(Monitor):
             instance_data_list.append(instance_data)
         
         return instance_data_list
+        
+    def execute(self):
+        inst_stats, stat_date = self.libvirt_util.get_all_instance_info()
+        perf_data = self.get_perf_data(inst_stats)
+        self.report('instance_perf', perf_data, stat_date)
