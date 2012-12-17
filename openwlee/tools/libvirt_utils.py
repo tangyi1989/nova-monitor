@@ -1,9 +1,9 @@
-#*_* coding=utf8 *_*
+#*_* coding=utf *_*
 
 """
-描述：此文件用于通过libvirt的接口采集虚拟机的指标。
-作者：唐万万
+Description : This file is used to get information from libvirt.
 
+Author : Tang Yi
 EMAIL:tang_yi_1989@qq.com
 """
 
@@ -16,10 +16,8 @@ from openwlee.tools import utils
 from openwlee import utils as openwlee_utils
 from openwlee.openstack.common import timeutils
 
-"""
-描述：本类只提供虚拟机的简单的统计信息，并不提供变化率等复杂的东西
-"""
 class DomainInfo():
+    """ Get domain info from libvirt, just support simple statistic info. """
     def __init__(self, dom, libvirt_con):
         self.__dom = dom
         self.__conn = libvirt_con
@@ -119,13 +117,13 @@ class LibvirtManager():
             
         return dom_stats
     
-"""
-It would be used by many monitor, this class is designed use singleton 
-pattern for performance reason. If it is used several times recently, it 
-would use cached data.
-"""
 @openwlee_utils.singleton
 class LibvirtUtil():
+    """
+    It would be used by many monitor, this class is designed use singleton 
+    pattern for performance reason. If it is used several times recently, it 
+    would use cached data.
+    """
     def __init__(self, expired_seconds=5):
         self.libvirt_manager = LibvirtManager()
         self.last_stat_time = timeutils.utcnow()
@@ -159,7 +157,7 @@ class LibvirtUtil():
         vm_stats = self.libvirt_manager.get_all_doms_stats()
         inst_stats = vm_stats.copy()
         
-        #NOTE 这个循环里面的代码看起来真的不好，谁有什么办法能让这个代码好看点
+        #NOTE 
         for inst_name in vm_stats.keys():
             
             inst_stat = vm_stats[inst_name]

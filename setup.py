@@ -1,10 +1,8 @@
 import os
-import setuptools
 import sys
+import setuptools
 
-
-def read_file(file_name):
-    return open(os.path.join(os.path.dirname(__file__), file_name)).read()
+from setuptools import find_packages
 
 setuptools.setup(
     name="openwlee",
@@ -12,7 +10,8 @@ setuptools.setup(
     author="Li Lei, Tang Yi",
     author_email="101859673@qq.com, tang_yi_1989@qq.com",
     description="Monitor virtual machine for openstack",
-    packages=["openwlee"],
+    packages=find_packages(exclude=['test', 'bin']),
+    install_requires = ['eventlet', 'pymongo'],
     scripts=['bin/wlee-api', 
              'bin/wlee-agent', 
              'bin/wlee-daemon',
