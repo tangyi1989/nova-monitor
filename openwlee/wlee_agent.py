@@ -67,7 +67,7 @@ class WleeAgentManager:
                 if next_schedule_time > current_time:
                     continue
                 
-                self.green_pool.spawn(task_inst['task'].execute)
+                self.green_pool.spawn(task_inst['task'].start)
                 task_inst['last_schedule_time'] = current_time
                 
                 if task_inst['interval'] <= 0:
