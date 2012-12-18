@@ -11,7 +11,7 @@ global_opts = [
                     'It is not necessarily a hostname, FQDN, or IP address. '
                     'and if using ZeroMQ, a valid hostname, FQDN, or IP '
                     'address'),
-    cfg.StrOpt('api_paste_file', default='/etc/openwlee/wlee-api.conf',
+    cfg.StrOpt('api_paste_file', default='/etc/openwlee/wlee-api-paste.ini',
                help='API Paste file path'),
     cfg.StrOpt('bind_host', default='0.0.0.0',
                help='Openwlee API bind host'),

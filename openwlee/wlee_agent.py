@@ -20,9 +20,9 @@ class WleeAgentManager:
         self._schedulers = []
         self.green_pool = eventlet.GreenPool()
         self.running = False
-        self.setup_tasks()
+        self._setup_tasks()
     
-    def setup_tasks(self):
+    def _setup_tasks(self):
         self.add_agent_task(task.common.HeartbeatTask, 5)
         self.add_agent_task(task.instance.InstancePerformanceTask, 10)
     

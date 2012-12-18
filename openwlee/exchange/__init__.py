@@ -3,7 +3,7 @@ from openwlee import utils
 from openwlee.openstack.common import cfg
 
 exchange_opts = [
-    cfg.StrOpt('exchage_method', default='http',
+    cfg.StrOpt('exchange_method', default='http',
                help='The way the wlee agent report to wlee daemon.')
            ]
 
@@ -22,7 +22,7 @@ Note:
     3.zeromq use zeromq to receive and report data.
     4.http use HTTP protocol to receive and report data.
 """
-IMPL = utils.LazyPluggable('exchage_method',
+IMPL = utils.LazyPluggable('exchange_method',
                            fake='openwlee.exchange.fake',
                            display='openwlee.exchange.display',
                            zeromq='openwlee.exchange.zeromq',

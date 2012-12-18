@@ -4,14 +4,14 @@ import sys
 
 from openwlee import config
 from openwlee.openstack.common import log as logging
-from openwlee.wlee_daemon import WleeDaemonManager
 
 LOG = logging.getLogger('openwlee.wlee-daemon')
 
 if __name__ == "__main__":
     config.parse_args(sys.argv)
     logging.setup("openwlee")
-    
+
+    from openwlee.wlee_daemon import WleeDaemonManager    
     daemon = WleeDaemonManager()
     LOG.info("Start wlee daemon event loop.")
     daemon.start()

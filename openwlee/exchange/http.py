@@ -12,7 +12,7 @@ from openwlee.openstack.common import log as logging
 http_exchange_opts = [
     cfg.StrOpt('http_receiver_listen_host', default="0.0.0.0", 
                help="HTTPReceiver listen bind host"),
-    cfg.StrOpt('http_receiver_listen_port', default=9778, 
+    cfg.IntOpt('http_receiver_listen_port', default=9778, 
                help="HTTPReceiver listen port"),
     cfg.StrOpt('http_receiver_address', default='localhost',
                help='HTTP receiver address.'),
