@@ -1,3 +1,8 @@
+# Copyright 2012 by Tangwanwan
+#This is setup tool of openWlee
+#It will build the three process:wlee-api is the api function of monitor,wlee-agent is the data node of nova-computer,wlee-daemon 
+# is the data collector.
+#You can read the doc class to know how to build and run the project.
 import os
 import sys
 import setuptools
