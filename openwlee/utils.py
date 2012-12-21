@@ -46,7 +46,7 @@ def walk_class_hierarchy(clazz, encountered=None):
                 yield subsubclass
             yield subclass
 
-def instance_id_to_time(id):
+def instance_id_to_name(id):
     return 'instance-%08x' % id
 
 def instance_name_to_id(name):
