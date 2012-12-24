@@ -1,6 +1,6 @@
 
 from openwlee.task import base
-from openwlee.tools.libvirt_utils import LibvirtUtil
+from openwlee.tools.libvirt import LibvirtUtil
 
 class InstancePerformanceTask(base.Task):
     def initialize(self):

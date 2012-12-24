@@ -3,18 +3,34 @@
 """
 Description : This file is used to get information from libvirt.
 
+Note : The code in this file is ugly, who want refactor it.
+
 Author : Tang Yi
 EMAIL:tang_yi_1989@qq.com
 """
 
-import libvirt
 import time
+from eventlet import tpool
 from datetime import datetime, timedelta
 from xml.etree import ElementTree
 
 from openwlee.tools import utils
 from openwlee import utils as openwlee_utils
+from openwlee.openstack.common import cfg
 from openwlee.openstack.common import timeutils
+from openwlee.openstack.common import log as logging
+
+libvirt_opts = [
+    cfg.BoolOpt('libvirt_nonblocking',
+                default=True,
+                help='Use a separated OS thread pool to realize non-blocking'
+                     ' libvirt calls'),
+]
+
+cfg.CONF.register_opts(libvirt_opts)
+LOG = logging.getLogger("openwlee.tools.libvirt")
+
+libvirt = None
 
 class DomainInfo():
     """ Get domain info from libvirt, just support simple statistic info. """
@@ -106,7 +122,46 @@ class DomainInfo():
 
 class LibvirtManager():
     def __init__(self):
-        self._conn = libvirt.open("qemu:///system")
+        
+        global libvirt
+        if libvirt is None:
+            libvirt = __import__('libvirt')
+        
+        self.uri = "qemu:///system"
+        self._wrapped_conn = None
+        
+    def _test_connection(self):
+        try:
+            self._wrapped_conn.getCapabilities()
+            return True
+        except libvirt.libvirtError as e:
+            if (e.get_error_code() == libvirt.VIR_ERR_SYSTEM_ERROR and
+                e.get_error_domain() in (libvirt.VIR_FROM_REMOTE,
+                                         libvirt.VIR_FROM_RPC)):
+                LOG.debug(_('Connection to libvirt broke'))
+                return False
+            raise
+    
+    def _get_connection(self):
+        if not self._wrapped_conn or not self._test_connection():
+            LOG.debug(_('Connecting to libvirt: %s'), self.uri)
+            if not cfg.CONF.libvirt_nonblocking:
+                self._wrapped_conn = self._connect(self.uri)
+            else:
+                self._wrapped_conn = tpool.proxy_call(
+                    (libvirt.virDomain, libvirt.virConnect),
+                    self._connect, self.uri)
+
+        return self._wrapped_conn
+    
+    _conn = property(_get_connection)
+    
+    def _connect(self, uri):
+        try:
+            return libvirt.openReadOnly(uri)
+        except libvirt.libvirtError as ex:
+            LOG.exception(_("Connection to libvirt failed: %s"), ex)
+            pass
         
     def get_all_doms_stats(self):
         dom_stats = {}
@@ -206,9 +261,3 @@ class LibvirtUtil():
         self.last_stat_time = current_time
         
         return inst_stats
-    
-def test():
-    pass
-        
-if __name__ == "__main__":
-    test()

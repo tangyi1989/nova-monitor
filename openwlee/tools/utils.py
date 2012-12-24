@@ -22,3 +22,24 @@ def io_bytes_rate(start_bytes, end_bytes, start_time, end_time):
         delta_bytes = end_bytes
         
     return delta_bytes * 1000000 / delta_time.microseconds
+
+def nic_traffic_info_read():
+    """ Read nic traffic info and returns a dict of nic. """
+    lines = open("/proc/net/dev", "r").readlines()
+    
+    columnLine = lines[1]
+    _, receiveCols , transmitCols = columnLine.split("|")
+    receiveCols = map(lambda a:"recv_"+a, receiveCols.split())
+    transmitCols = map(lambda a:"trans_"+a, transmitCols.split())
+
+    cols = receiveCols+transmitCols
+
+    faces = {}
+    for line in lines[2:]:
+        if line.find(":") < 0: continue
+        face, data = line.split(":")
+        face = ''.join(face.split())
+        faceData = dict(zip(cols, data.split()))
+        faces[face] = faceData
+        
+    return faces
