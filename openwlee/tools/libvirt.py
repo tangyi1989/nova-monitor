@@ -34,6 +34,7 @@ libvirt = None
 
 class DomainInfo():
     """ Get domain info from libvirt, just support simple statistic info. """
+    
     def __init__(self, dom, libvirt_con):
         self.__dom = dom
         self.__conn = libvirt_con
@@ -65,12 +66,12 @@ class DomainInfo():
             nodes.append(devdst)
             
         return nodes
-
-    """
-    cpu_percent = (cputime1 - cputime2) / (time_delta * cores)
-    """    
+   
     @property
     def overview(self):
+        """
+        cpu_percent = (cputime1 - cputime2) / (time_delta * cores)
+        """ 
         (dom_run_state, dom_max_mem_kb, dom_memory_kb,
          dom_nr_virt_cpu, dom_cpu_time) = self.__dom.info()
          
@@ -129,10 +130,11 @@ class LibvirtManager():
         
         self.uri = "qemu:///system"
         self._wrapped_conn = None
-        
+    
     def _test_connection(self):
+        #TODO : we should add a timeout here.
         try:
-            self._wrapped_conn.getCapabilities()
+            self._wrapped_conn.getLibVersion()
             return True
         except libvirt.libvirtError as e:
             if (e.get_error_code() == libvirt.VIR_ERR_SYSTEM_ERROR and
@@ -186,12 +188,12 @@ class LibvirtUtil():
         self.expired_seconds = expired_seconds
         self.cached_stats = None
     
-    """
-    Get vm_info(statistic and performance info).
-    If cached data is not expired, return cached data,
-    otherwise get the lasted data from libvirt and return.
-    """
     def get_all_instance_info(self):
+        """
+        Get vm_info(statistic and performance info).
+        If cached data is not expired, return cached data,
+        otherwise get the lasted data from libvirt and return.
+        """
         stat_date = self.last_stat_time
         now_date = timeutils.utcnow()
         exipred_date = stat_date + timedelta(seconds = self.expired_seconds)
@@ -203,11 +205,11 @@ class LibvirtUtil():
         
         return (self.cached_stats, stat_date)
     
-    """
-    Get instance statistic info from libvirtd then calculate 
-    performance info by passed time.
-    """
     def stat_vm_info_from_libvirt(self):
+        """
+        Get instance statistic info from libvirtd then calculate 
+        performance info by passed time.
+        """
         current_time = timeutils.utcnow()
         vm_stats = self.libvirt_manager.get_all_doms_stats()
         inst_stats = vm_stats.copy()

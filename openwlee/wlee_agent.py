@@ -67,6 +67,8 @@ class WleeAgentManager:
                 if next_schedule_time > current_time:
                     continue
                 
+                # I use this, so when you write a task, please make sure the task use eventlet
+                # and is nonblocking.
                 self.green_pool.spawn(task_inst['task'].start)
                 task_inst['last_schedule_time'] = current_time
                 
@@ -78,8 +80,3 @@ class WleeAgentManager:
     def stop(self):
         self.running = False
         
-def tests():
-    pass
-
-if __name__ == "__main__":
-    tests()    

@@ -1,4 +1,5 @@
 import re
+import time
 import json
 import socket
 import inspect
@@ -72,6 +73,7 @@ def debug(func):
         print "Invoking Function : %s.%s" % (func.__module__, func.__name__) 
         print "With args : %s kargs : %s" % (to_primitive(args), 
                                              to_primitive(kargs))
+        start = time.time()
         try:
             ret = func(*args, **kargs)
         except Exception as e:
@@ -79,6 +81,7 @@ def debug(func):
             print traceback.format_exc()
             raise e
         print "Function returns : %s" % to_primitive(ret)
+        print "Cost %f seconds" % (time.time() - start)
         print ""
         return ret
     
