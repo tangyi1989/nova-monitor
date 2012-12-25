@@ -22,10 +22,13 @@ from openwlee.openstack.common import log as logging
 
 libvirt_opts = [
     cfg.BoolOpt('libvirt_nonblocking',
-                default=True,
+                default=False,
                 help='Use a separated OS thread pool to realize non-blocking'
                      ' libvirt calls'),
 ]
+
+#FIXME : It statistic the wrong data if we use nonblocking mode.
+#So it has a bug here. We should fix this later.
 
 cfg.CONF.register_opts(libvirt_opts)
 LOG = logging.getLogger("openwlee.tools.libvirt")
