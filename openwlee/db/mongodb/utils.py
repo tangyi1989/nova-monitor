@@ -37,9 +37,17 @@ def ensure_collction(collection_name, db_name = 'wlee_db', indexes=None, options
 def wrap_mongo_query_result(query_func):
     
     def del_mongo_id_func(*arg, **kargs):
-        rows = query_func(*arg, **kargs)
-        for row in rows:
-            del row['_id']
-        return rows
+        result = query_func(*arg, **kargs)
+        if isinstance(result, list):
+            rows = result
+            for row in rows:
+                del row['_id']
+            return rows
+        elif result is not None:
+            del result['_id']
+            return result
+        else:
+            return result
+            
     
     return del_mongo_id_func

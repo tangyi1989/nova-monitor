@@ -10,6 +10,7 @@ ensure_collction('instance_recently_perf', db_name = 'wlee_db',
                  indexes = [('name', pymongo.ASCENDING), ('timestamp', pymongo.DESCENDING)], 
                  options = {"capped" : True, "size" : INST_RECENTLY_PERF_SIZE, 
                             "max" : INST_RECENTLY_PERF_SIZE})
+ensure_collction('instance_statistic', db_name = 'wlee_db')
 ensure_collction('agent_status', db_name = 'wlee_db')
 
 def update_agent_status(host, datetime):
@@ -42,3 +43,14 @@ def get_instance_recently_perf(instance_name, seconds):
     recently_perf_list = [i for i in recently_perf_cursor]
     
     return recently_perf_list
+
+def update_instance_statistic_data(statistic_data, datetime):
+    db = get_database()
+    statistic_data['last_updated_at'] = datetime
+    return db.instance_statistic.update({'host' : statistic_data['name']}, 
+                                        {'$set' : statistic_data}, True)
+
+@utils.wrap_mongo_query_result
+def get_instance_statistic(instance_name):
+    db = get_database()
+    return db.instance_statistic.find_one({'name' : instance_name})

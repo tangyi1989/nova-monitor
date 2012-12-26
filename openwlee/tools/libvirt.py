@@ -9,12 +9,14 @@ Author : Tang Yi
 EMAIL:tang_yi_1989@qq.com
 """
 
+import os
 import time
 from eventlet import tpool
 from datetime import datetime, timedelta
 from xml.etree import ElementTree
 
 from openwlee.tools import utils
+from openwlee.tools import images
 from openwlee import utils as openwlee_utils
 from openwlee.openstack.common import cfg
 from openwlee.openstack.common import timeutils
@@ -87,15 +89,31 @@ class DomainInfo():
     def disk_stats(self):
         disk_io_stats = dict()
         
-        dom_xml = self.__dom.XMLDesc(0)
-        disks = self.get_xml_nodes(dom_xml, './devices/disk')
+        xml = self.__dom.XMLDesc(0)
+        doc = ElementTree.fromstring(xml)
+        path_nodes = doc.findall('.//devices/disk/source')
+        target_nodes = doc.findall('.//devices/disk/target')
+        driver_nodes = doc.findall('.//devices/disk/driver')
         
-        for disk in disks:
+        for cnt, path_node in enumerate(path_nodes):
+            dev = target_nodes[cnt].get('dev')
+            path = path_node.get('file')
+            disk_type = driver_nodes[cnt].get('type')
+            
+            dk_size = int(os.path.getsize(path))
+            
+            if disk_type == "qcow2":
+                virt_size = images.get_disk_size(path)
+            else:
+                virt_size = 0
+            
             (rd_req, rd_bytes, wr_req, 
-             wr_bytes, errs) = self.__dom.blockStats(disk)
-             
-            disk_io_stats[disk] = {'rd_bytes' : rd_bytes,  
-                                   'wr_bytes' : wr_bytes}
+             wr_bytes, errs) = self.__dom.blockStats(dev)
+              
+            disk_io_stats[dev] = {'rd_bytes' : rd_bytes,  
+                                   'wr_bytes' : wr_bytes,
+                                   'total' : virt_size,
+                                   'used' : dk_size}
             
         return disk_io_stats
         
@@ -111,7 +129,11 @@ class DomainInfo():
              tx_bytes,tx_packets, tx_errs, tx_drop) = self.__dom.interfaceStats(nic_dev)
             
             nic_stats[nic_dev] = {'rx_bytes' : rx_bytes, 
-                                  'tx_bytes' : tx_bytes}
+                                  'tx_bytes' : tx_bytes,
+                                  'rx_drop' : rx_drop,
+                                  'tx_drop' : rx_drop,
+                                  'rx_errs' : rx_errs,
+                                  'tx_errs' : tx_errs}
             
         return nic_stats
     
@@ -124,7 +146,7 @@ class DomainInfo():
             
         return _dict
 
-class LibvirtManager():
+class LibvirtManager(): 
     def __init__(self):
         
         global libvirt

@@ -25,6 +25,7 @@ class WleeAgentManager:
     def _setup_tasks(self):
         self.add_agent_task(task.common.HeartbeatTask, 5)
         self.add_agent_task(task.instance.InstancePerformanceTask, 10)
+        self.add_agent_task(task.instance.InstanceStatisticTask, 10)
     
     def add_agent_task(self, task_cls, interval=0):
         """ Add a agent task that would run every interval seconds, 

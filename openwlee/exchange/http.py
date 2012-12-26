@@ -48,7 +48,7 @@ class HTTPReceiver(base.Receiver):
             wsgi_input = env['wsgi.input']
             body = wsgi_input.read(content_length)
             
-            LOG.info("Receive data : %s Length : %d" % (body, content_length))
+            LOG.debug("Receive data : %s Length : %d" % (body, content_length))
             
             self.handle_receive_data(body)
             
@@ -74,7 +74,7 @@ class HTTPReporter(base.Reporter):
         http = httplib2.Http()
         try:
             response, body = http.request(self.report_url, "POST", data)
-            LOG.info("HTTPRepoter request response : %d, Content : %s" % (response.status, body))
+            LOG.debug("HTTPRepoter request response : %d, Content : %s" % (response.status, body))
         except Exception as e:
             LOG.error("HTTPReporter request error Exception %s" % e)
 

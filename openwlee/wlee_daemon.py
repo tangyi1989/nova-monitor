@@ -19,6 +19,8 @@ class EventDispatcher():
     def dispatch(self, host, type, data, datetime):
         if type == "instance_perf":
             self.handle_instance_perf_data(data, datetime)
+        elif type == "instance_statistic":
+            self.handle_instance_statistic_data(data, datetime)
         elif type == "heartbeat":
             self.handle_heartbeat(host, datetime)
     
@@ -29,6 +31,10 @@ class EventDispatcher():
         for inst_perf in inst_perf_list:
             inst_perf['timestamp']= utils.datetime_to_timestamp(datetime)
             self.db.save_instance_perf_data(inst_perf)
+    
+    def handle_instance_statistic_data(self, inst_statistc_list, datetime):
+        for inst_statistic in inst_statistc_list:
+            self.db.update_instance_statistic_data(inst_statistic, datetime)
         
 class WleeDaemonManager(db_base.Base):
     """

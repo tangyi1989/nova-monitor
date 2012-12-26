@@ -21,6 +21,9 @@ class APIRouter(wsgi.Router):
         mapper.connect(None, "/instance/{instance_id}/performance", 
                        controller=instance_resource, action="performance",
                        conditions={'method': 'GET'})
+        mapper.connect(None, "/instance/{instance_id}/statistic", 
+                       controller=instance_resource, action="statistic",
+                       conditions={'method': 'GET'})
         
         return mapper
 

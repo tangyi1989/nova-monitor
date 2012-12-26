@@ -1,4 +1,14 @@
 
+# Used for looking up extensions of text
+# to their 'multiplied' byte amount
+BYTE_MULTIPLIERS = {
+    '': 1,
+    't': 1024 ** 4,
+    'g': 1024 ** 3,
+    'm': 1024 ** 2,
+    'k': 1024,
+}
+
 def cpu_percent(start_cputime, end_cputime, start_time, end_time, ncpus):
     """
     Statistic cpu used percent by cputime used and real time used.
@@ -43,3 +53,31 @@ def nic_traffic_info_read():
         faces[face] = faceData
         
     return faces
+
+def to_bytes(text, default=0):
+    """Try to turn a string into a number of bytes. Looks at the last
+    characters of the text to determine what conversion is needed to
+    turn the input text into a byte number.
+    
+    Supports: B/b, K/k, M/m, G/g, T/t (or the same with b/B on the end)
+    
+    """
+    # Take off everything not number 'like' (which should leave
+    # only the byte 'identifier' left)
+    mult_key_org = text.lstrip('-1234567890')
+    mult_key = mult_key_org.lower()
+    mult_key_len = len(mult_key)
+    if mult_key.endswith("b"):
+        mult_key = mult_key[0:-1]
+    try:
+        multiplier = BYTE_MULTIPLIERS[mult_key]
+        if mult_key_len:
+            # Empty cases shouldn't cause text[0:-0]
+            text = text[0:-mult_key_len]
+        return int(text) * multiplier
+    except KeyError:
+        msg = _('Unknown byte multiplier: %s') % mult_key_org
+        raise TypeError(msg)
+    except ValueError:
+        return default
+

@@ -24,6 +24,12 @@ class InstanceController():
         instance_perf_list = db.get_instance_recently_perf(instance_name, seconds)
         return instance_perf_list
 
+    def statistic(self, req, instance_id):
+        instance_id = int(instance_id)
+        instance_name = utils.instance_id_to_name(instance_id)
+        
+        return db.get_instance_statistic(instance_name)
+    
 def create_resource(options):
     """ Instance resource factory method. """
     deserializer = wsgi.RequestDeserializer()
